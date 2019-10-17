@@ -1,4 +1,4 @@
-## NetworkListener
+## NetworkListener ![](https://jitpack.io/v/AshwinN796/networkListener.svg)
 NetworkLister library check the internet connection of device at runtime.
 This repo has just figure out the running network state of internet on android devices.
 
@@ -6,10 +6,10 @@ This repo has just figure out the running network state of internet on android d
 ##### project level gradle
 ```
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+ repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+ }
 }
 
 ```
@@ -28,6 +28,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+	//init network class here
         NetworkConfig.initNetworkConfig(this)
     }
 
@@ -42,13 +43,17 @@ class MainActivity : AppCompatActivity(), NetworkStateListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+	
+	//create instance of network config class
         networkConfig = NetworkConfig.getInstance()
+	
+	//add listener for NetworkConfig
         networkConfig!!.addNetworkConnectivityListenr(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+	//remove listener from NetworkConfig
         networkConfig!!.removeNetworkConnectivityListener(this)
     }
 
