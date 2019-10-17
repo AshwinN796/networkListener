@@ -1,0 +1,2 @@
+include ':app', ':networkhandler'
+rootProject.name='NetworkStateListener'

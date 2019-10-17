@@ -1,0 +1,41 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "com.kknirmale.networkstatelistener"
+        minSdkVersion appMinSdkVersion
+        targetSdkVersion appTargetSdkVersion
+        versionCode currentVersionCode
+        versionName currentVersionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation project(path: ':networkhandler')
+
+    //core libs
+    implementation androidxLibraries.appcompat
+    implementation androidxLibraries.kotlin_core
+    implementation androidxLibraries.constraint_layout
+
+
+    testImplementation testLibraries.junit4
+    androidTestImplementation androidTestLibraries.testRunner
+    androidTestImplementation androidTestLibraries.espressoCore
+}
