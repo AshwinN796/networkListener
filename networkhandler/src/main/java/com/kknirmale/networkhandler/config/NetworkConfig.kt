@@ -17,16 +17,12 @@ import java.lang.ref.WeakReference
  */
 class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListener{
 
-    private var configReferences : WeakReference<Context>? = null
-    private var networkStateListenerWeakReferenceList : MutableList<WeakReference<NetworkStateListener>>? = null
-    private var networkChangeReceiver : NetworkStateReceiver? = null
-    private var isNetworkStatusRegistered = false
-    private var isNetworkConnected = false
-
-    init {
-        val appContext = context.applicationContext
-        configReferences = WeakReference(appContext)
-        networkStateListenerWeakReferenceList = ArrayList()
+    override fun onComplete(connected: Boolean) {
+        if (connected){
+            reportInternetAvailabilityStatus(connected)
+        }else{
+            reportInternetAvailabilityStatus(false)
+        }
     }
 
     companion object {
@@ -53,6 +49,18 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
             }
             return mInstance!!
         }
+    }
+
+    private var configReferences : WeakReference<Context>? = null
+    private var networkStateListenerWeakReferenceList : MutableList<WeakReference<NetworkStateListener>>? = null
+    private var networkChangeReceiver : NetworkStateReceiver? = null
+    private var isNetworkStatusRegistered = false
+    private var isNetworkConnected = false
+
+    init {
+        val appContext = context.applicationContext
+        configReferences = WeakReference(appContext)
+        networkStateListenerWeakReferenceList = ArrayList()
     }
 
     /*
@@ -195,14 +203,6 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
         }
 
         unregisterNetworkChangeReceiver()
-    }
-
-    override fun onComplete(connected: Boolean) {
-        if (connected){
-            reportInternetAvailabilityStatus(connected)
-        }else{
-            reportInternetAvailabilityStatus(false)
-        }
     }
 
 
