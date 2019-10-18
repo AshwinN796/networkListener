@@ -30,8 +30,8 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     }
 
     companion object {
-        private val lock = Any()
-        private var mInstance: NetworkConfig? = null
+        val lock = Any()
+        var mInstance: NetworkConfig? = null
 
         /*
             Returns instance of NetworkConfig class
