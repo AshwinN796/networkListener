@@ -1,6 +1,5 @@
 ## NetworkListener ![](https://jitpack.io/v/AshwinN796/networkListener.svg)
-NetworkLister library check the internet connection of device at runtime.
-This repo has just figure out the running network state of internet on android devices.
+NetworkLister is the library to check the internet connection status of device at runtime.
 
 ## SetUp
 ##### project level gradle
@@ -16,7 +15,7 @@ allprojects {
 
 #### module level gradle
 ```
-implementation 'com.github.AshwinN796:networkListener:1.0.0'
+implementation 'com.github.AshwinN796:networkListener:1.0.1'
 
 ```
 
@@ -32,6 +31,14 @@ class MyApplication : Application() {
         NetworkConfig.initNetworkConfig(this)
     }
 
+    override fun onLowMemory() {
+        super.onLowMemory()
+        //Remove all listeners while on low memory
+        NetworkConfig.getInstance().removeAllNetworkConnectivityListener()
+
+        }
+    }
+
 ```
 
 #### In your activity class
@@ -44,11 +51,11 @@ class MainActivity : AppCompatActivity(), NetworkStateListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 	
-	//create instance of network config class
+	//get instance of networkConfig class
         networkConfig = NetworkConfig.getInstance()
 	
 	//add listener for NetworkConfig
-        networkConfig!!.addNetworkConnectivityListenr(this)
+        networkConfig!!.addNetworkConnectivityListener(this)
     }
 
     override fun onDestroy() {

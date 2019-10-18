@@ -14,15 +14,23 @@ class MainActivity : AppCompatActivity(), NetworkStateListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //Get instance of networkConfig class
         networkConfig = NetworkConfig.getInstance()
-        networkConfig!!.addNetworkConnectivityListenr(this)
+
+        //add connectivity listener
+        networkConfig!!.addNetworkConnectivityListener(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        //remove connectivity listener
         networkConfig!!.removeNetworkConnectivityListener(this)
     }
 
+    /*
+        Do action on network status changed
+        Here you can perform any action for Network state listener depending on your requirement.
+     */
     override fun onNetworkStatusChanged(isConnected: Boolean) {
         when(isConnected){
             true -> Toast.makeText(this@MainActivity,"Internet Connected",Toast.LENGTH_LONG).show()

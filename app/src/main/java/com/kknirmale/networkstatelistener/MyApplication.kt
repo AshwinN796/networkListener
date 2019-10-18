@@ -13,6 +13,14 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        //init NetworkConfig
         NetworkConfig.initNetworkConfig(this)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        //Remove all listeners while on low memory
+        NetworkConfig.getInstance().removeAllNetworkConnectivityListener()
+
     }
 }
