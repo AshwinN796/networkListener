@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.os.Build
 import android.telephony.TelephonyManager
 
@@ -60,6 +61,48 @@ class NetworkUtil() {
             return isConnectedToWifi || isConnectedToMobile || isInternetFast
         }
 
+    }
+
+    fun isInternetHasSpeed() : Int {
+        val info = NetworkUtil(context).networkInfo.activeNetworkInfo
+        return if (isConnectedToMobileOrWifi()) {
+            return when (info?.type) {
+                ConnectivityManager.TYPE_WIFI -> NetworkConstant.WIFI_CONNECTED
+                ConnectivityManager.TYPE_MOBILE -> when (info.subtype) {
+                    TelephonyManager.NETWORK_TYPE_1xRTT -> NetworkConstant.SLOW_CONNECTED // ~ 50-100 kbps
+                    TelephonyManager.NETWORK_TYPE_CDMA -> NetworkConstant.SLOW_CONNECTED // ~ 14-64 kbps
+                    TelephonyManager.NETWORK_TYPE_EDGE -> NetworkConstant.SLOW_CONNECTED // ~ 50-100 kbps
+                    TelephonyManager.NETWORK_TYPE_EVDO_0 -> NetworkConstant.LOW_SPEED_CONNECTED // ~ 400-1000 kbps
+                    TelephonyManager.NETWORK_TYPE_EVDO_A -> NetworkConstant.LOW_SPEED_CONNECTED // ~ 600-1400 kbps
+                    TelephonyManager.NETWORK_TYPE_GPRS -> NetworkConstant.SLOW_CONNECTED // ~ 100 kbps
+                    TelephonyManager.NETWORK_TYPE_HSDPA -> NetworkConstant.FULL_SPEED_CONNECTED // ~ 2-14 Mbps
+                    TelephonyManager.NETWORK_TYPE_HSPA -> NetworkConstant.LOW_SPEED_CONNECTED // ~ 700-1700 kbps
+                    TelephonyManager.NETWORK_TYPE_HSUPA -> NetworkConstant.FULL_SPEED_CONNECTED // ~ 1-23 Mbps
+                    TelephonyManager.NETWORK_TYPE_UMTS -> NetworkConstant.LOW_SPEED_CONNECTED // ~ 400-7000 kbps
+                    /*
+                     * Above API level 7, make sure to set android:targetSdkVersion
+                     * to appropriate level to use these
+                     * Here the Minimum API Level is 22 so no need
+                     */
+                    TelephonyManager.NETWORK_TYPE_EHRPD // API level 11
+                    -> NetworkConstant.FULL_SPEED_CONNECTED // ~ 1-2 Mbps
+                    TelephonyManager.NETWORK_TYPE_EVDO_B // API level 9
+                    -> NetworkConstant.FULL_SPEED_CONNECTED // ~ 5 Mbps
+                    TelephonyManager.NETWORK_TYPE_HSPAP // API level 13
+                    -> NetworkConstant.FULL_SPEED_CONNECTED // ~ 10-20 Mbps
+                    TelephonyManager.NETWORK_TYPE_IDEN // API level 8
+                    -> NetworkConstant.SLOW_CONNECTED // ~25 kbps
+                    TelephonyManager.NETWORK_TYPE_LTE // API level 11
+                    -> NetworkConstant.FULL_SPEED_CONNECTED // ~ 10+ Mbps
+                    // Unknown
+                    TelephonyManager.NETWORK_TYPE_UNKNOWN -> NetworkConstant.SLOW_CONNECTED
+                    else -> NetworkConstant.SLOW_CONNECTED
+                }
+                else -> NetworkConstant.SLOW_CONNECTED
+            }
+        } else {
+            NetworkConstant.SLOW_CONNECTED
+        }
     }
 
     private fun isInternetFast(type: Int, subType: Int): Boolean {

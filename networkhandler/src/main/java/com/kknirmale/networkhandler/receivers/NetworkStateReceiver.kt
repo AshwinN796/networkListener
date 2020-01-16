@@ -21,6 +21,7 @@ class NetworkStateReceiver : BroadcastReceiver() {
         val internetChangeListener : InternetCheckListener = internetListenerReference!!.get()!!
 
         internetChangeListener.onComplete(NetworkUtil(context!!).isConnectedToMobileOrWifi())
+        internetChangeListener.onInternetSpeed(NetworkUtil(context).isInternetHasSpeed())
     }
 
     /*
@@ -42,6 +43,7 @@ class NetworkStateReceiver : BroadcastReceiver() {
 
     interface InternetCheckListener {
         fun onComplete(connected: Boolean)
+        fun onInternetSpeed(speedType : Int)
     }
 
 
