@@ -12,7 +12,6 @@ import java.lang.ref.WeakReference
 
     @see <a href="https://github.com/JobGetabu/DroidNet/blob/master/droidnet/src/main/java/com/droidnet/DroidNet.java">This class refer from DroidNet</a>
 
-    Created by Ashwin Nirmale on 17 October,2019
 
  */
 class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListener{
@@ -243,4 +242,6 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
         unregisterNetworkChangeReceiver()
     }
 
+
 }
+
