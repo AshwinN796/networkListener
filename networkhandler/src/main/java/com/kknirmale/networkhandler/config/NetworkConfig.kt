@@ -16,6 +16,10 @@ import java.lang.ref.WeakReference
  */
 class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListener{
 
+    override fun onInternetSpeed(speedType: Int) {
+        reportNetworkSpeedType(speedType)
+    }
+
     override fun onComplete(connected: Boolean) {
         if (connected){
             reportInternetAvailabilityStatus(connected)
@@ -55,6 +59,7 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     private var networkChangeReceiver : NetworkStateReceiver? = null
     private var isNetworkStatusRegistered = false
     private var isNetworkConnected = false
+    private var networkTypeValue = 0
 
     init {
         val appContext = context.applicationContext
@@ -126,7 +131,39 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     }
 
     /*
-        Attach connectivity listener to listen network state from broadcast receiver
+        Get report of internet speed value from from listener
+     */
+    private fun reportNetworkSpeedType(speedType : Int) {
+        networkTypeValue = speedType
+        if (networkStateListenerWeakReferenceList == null){
+            return
+        }
+
+        val listenerIterator : MutableIterator<WeakReference<NetworkStateListener>> = networkStateListenerWeakReferenceList!!.iterator()
+        while (listenerIterator.hasNext()){
+
+            val listenerReference : WeakReference<NetworkStateListener> = listenerIterator.next()
+            if (listenerReference == null){
+                listenerIterator.remove()
+                continue
+            }
+
+            val statusListener : NetworkStateListener = listenerReference.get()!!
+            if (statusListener == null){
+                listenerIterator.remove()
+                continue
+            }
+
+            statusListener.onNetworkSpeedChanged(speedType)
+        }
+
+        if (networkStateListenerWeakReferenceList!!.isEmpty()){
+            unregisterNetworkChangeReceiver()
+        }
+    }
+
+    /*
+        Attach all connectivity listener to listen network state from broadcast receiver
     */
     fun addNetworkConnectivityListener(statusListener: NetworkStateListener){
         if (statusListener == null){
@@ -140,6 +177,7 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
         }
 
         reportInternetAvailabilityStatus(isNetworkConnected)
+        reportNetworkSpeedType(networkTypeValue)
 
     }
 
@@ -205,8 +243,5 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     }
 
 
-//    companion object{
-//        var lock : Objec
-//    }
-
 }
+

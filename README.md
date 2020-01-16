@@ -1,48 +1,50 @@
-## NetworkListener ![](https://jitpack.io/v/AshwinN796/networkListener.svg)
+# NetworkListener ![](https://jitpack.io/v/AshwinN796/networkListener.svg)
+
 NetworkLister is the library to check the internet connection status of device at runtime.
 
-## SetUp
-##### project level gradle
-```
+
+## New Features!
+  - Now detect runtime internet speed status
+
+### Installation
+#### Project level gradle
+
+```Gradle
 allprojects {
  repositories {
-    ...
     maven { url 'https://jitpack.io' }
  }
 }
-
 ```
 
-#### module level gradle
+#### Module level gradle
+```Gradle
+implementation 'com.github.AshwinN796:networkListener:1.1.0'
 ```
-implementation 'com.github.AshwinN796:networkListener:1.0.4'
 
-```
+##### Implementation
+Application class :
 
-## How to use
-
-#### In your application class
-```
+```Kotlin
 class MyApplication : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-	//init network class here
-        NetworkConfig.initNetworkConfig(this)
-    }
+       override fun onCreate() {
+           super.onCreate()
+           //init NetworkConfig
+           NetworkConfig.initNetworkConfig(this)
+       }
 
-    override fun onLowMemory() {
-        super.onLowMemory()
-        //Remove all listeners while on low memory
-        NetworkConfig.getInstance().removeAllNetworkConnectivityListener()
+       override fun onLowMemory() {
+           super.onLowMemory()
+           //Remove all listeners while on low memory
+           NetworkConfig.getInstance().removeAllNetworkConnectivityListener()
 
-        }
-    }
-
+       }
+   }
 ```
+Activity class :
 
-#### In your activity class
-```
+```Kotlin
 class MainActivity : AppCompatActivity(), NetworkStateListener {
 
     private var networkConfig : NetworkConfig? = null
@@ -50,24 +52,38 @@ class MainActivity : AppCompatActivity(), NetworkStateListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-	
-	//get instance of networkConfig class
+
+        //Get instance of networkConfig class
         networkConfig = NetworkConfig.getInstance()
-	
-	//add listener for NetworkConfig
+
+        //add connectivity listener
         networkConfig!!.addNetworkConnectivityListener(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-	//remove listener from NetworkConfig
+        //remove connectivity listener
         networkConfig!!.removeNetworkConnectivityListener(this)
     }
 
+    /*
+        Do action on network status changed
+        Here you can perform any action for Network state listener depending on your requirement.
+     */
     override fun onNetworkStatusChanged(isConnected: Boolean) {
-        when(isConnected){
-            true -> Toast.makeText(this@MainActivity,"Internet Connected",Toast.LENGTH_LONG).show()
-            false -> Toast.makeText(this@MainActivity,"Internet Failed",Toast.LENGTH_LONG).show()
+
+//        when(isConnected){
+//            true -> {//make your action}
+//            false -> {}
+//        }
+    }
+
+    override fun onNetworkSpeedChanged(speedType: Int) {
+        when(speedType) {
+            NetworkConstant.WIFI_CONNECTED -> {//make your action}
+            NetworkConstant.FULL_SPEED_CONNECTED -> {}
+            NetworkConstant.SLOW_CONNECTED ->  {}
+            NetworkConstant.LOW_SPEED_CONNECTED -> {}
         }
     }
 }

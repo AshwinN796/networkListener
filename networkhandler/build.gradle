@@ -23,6 +23,12 @@ android {
         }
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
 }
 
 dependencies {
@@ -33,6 +39,9 @@ dependencies {
     implementation androidxLibraries.kotlin_core
 
     testImplementation testLibraries.junit4
+    testImplementation testLibraries.roboElectric
     androidTestImplementation androidTestLibraries.testRunner
     androidTestImplementation androidTestLibraries.espressoCore
+    androidTestImplementation androidTestLibraries.androidXJUnit
+
 }
