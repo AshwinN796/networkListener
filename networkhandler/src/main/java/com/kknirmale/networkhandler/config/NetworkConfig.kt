@@ -10,20 +10,20 @@ import java.lang.ref.WeakReference
 
 /**
 
-    @see <a href="https://github.com/JobGetabu/DroidNet/blob/master/droidnet/src/main/java/com/droidnet/DroidNet.java">This class refer from DroidNet</a>
+@see <a href="https://github.com/JobGetabu/DroidNet/blob/master/droidnet/src/main/java/com/droidnet/DroidNet.java">This class refer from DroidNet</a>
 
 
  */
-class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListener{
+class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListener {
 
     override fun onInternetSpeed(speedType: Int) {
         reportNetworkSpeedType(speedType)
     }
 
     override fun onComplete(connected: Boolean) {
-        if (connected){
+        if (connected) {
             reportInternetAvailabilityStatus(connected)
-        }else{
+        } else {
             reportInternetAvailabilityStatus(false)
         }
     }
@@ -35,10 +35,10 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
         /*
             Returns instance of NetworkConfig class
          */
-        fun initNetworkConfig(context: Context) : NetworkConfig{
-            if (mInstance == null){
-                synchronized(lock){
-                    if (mInstance == null){
+        fun initNetworkConfig(context: Context): NetworkConfig {
+            if (mInstance == null) {
+                synchronized(lock) {
+                    if (mInstance == null) {
                         mInstance = NetworkConfig(context)
                     }
                 }
@@ -54,9 +54,9 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
         }
     }
 
-    private var configReferences : WeakReference<Context>? = null
-    private var networkStateListenerWeakReferenceList : MutableList<WeakReference<NetworkStateListener>>? = null
-    private var networkChangeReceiver : NetworkStateReceiver? = null
+    private var configReferences: WeakReference<Context>? = null
+    private var networkStateListenerWeakReferenceList: MutableList<WeakReference<NetworkStateListener>>? = null
+    private var networkChangeReceiver: NetworkStateReceiver? = null
     private var isNetworkStatusRegistered = false
     private var isNetworkConnected = false
     private var networkTypeValue = 0
@@ -70,13 +70,12 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     /*
         Register broadcast receiver from here
      */
-    private fun registerNetworkChangeReceiver(){
-        val context = configReferences!!.get()
-        if (context != null && !isNetworkStatusRegistered){
+    private fun registerNetworkChangeReceiver() {
+        val context = configReferences?.get()
+        if (context != null && !isNetworkStatusRegistered) {
             networkChangeReceiver = NetworkStateReceiver()
             val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-//            IntentFilter filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-            networkChangeReceiver!!.setInternetStateChangeListener(this)
+            networkChangeReceiver?.setInternetStateChangeListener(this)
             context.registerReceiver(networkChangeReceiver, intentFilter)
             isNetworkStatusRegistered = true
         }
@@ -86,11 +85,11 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
         Unregister broadcast receiver
      */
 
-    private fun unregisterNetworkChangeReceiver(){
-        val context = configReferences!!.get()
-        if (context != null && networkChangeReceiver != null && isNetworkStatusRegistered){
+    private fun unregisterNetworkChangeReceiver() {
+        val context = configReferences?.get()
+        if (context != null && networkChangeReceiver != null && isNetworkStatusRegistered) {
             context.unregisterReceiver(networkChangeReceiver)
-            networkChangeReceiver!!.removeInternetStateChangeListener()
+            networkChangeReceiver?.removeInternetStateChangeListener()
         }
 
         networkChangeReceiver = null
@@ -100,32 +99,31 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     /*
         Get report of internet availability status from from listener
      */
-    private fun reportInternetAvailabilityStatus(isInternetAvailable : Boolean){
+    private fun reportInternetAvailabilityStatus(isInternetAvailable: Boolean) {
         isNetworkConnected = isInternetAvailable
-        if (networkStateListenerWeakReferenceList == null){
+        if (networkStateListenerWeakReferenceList == null) {
             return
         }
 
-        val listenerIterator : MutableIterator<WeakReference<NetworkStateListener>> = networkStateListenerWeakReferenceList!!.iterator()
-        while (listenerIterator.hasNext()){
+        val listenerIterator: MutableIterator<WeakReference<NetworkStateListener>>? = networkStateListenerWeakReferenceList?.iterator()
+        if (listenerIterator != null) {
+            while (listenerIterator.hasNext()) {
 
-            val listenerReference : WeakReference<NetworkStateListener> = listenerIterator.next()
-            if (listenerReference == null){
-                listenerIterator.remove()
-                continue
+                val listenerReference: WeakReference<NetworkStateListener> = listenerIterator.next()
+
+                val statusListener: NetworkStateListener? = listenerReference.get()
+                if (statusListener == null) {
+                    listenerIterator.remove()
+                }
+
+                statusListener?.onNetworkStatusChanged(isInternetAvailable)
             }
-
-            val statusListener : NetworkStateListener = listenerReference.get()!!
-            if (statusListener == null){
-                listenerIterator.remove()
-                continue
-            }
-
-            statusListener.onNetworkStatusChanged(isInternetAvailable)
         }
 
-        if (networkStateListenerWeakReferenceList!!.isEmpty()){
-            unregisterNetworkChangeReceiver()
+        if (networkStateListenerWeakReferenceList != null) {
+            if (networkStateListenerWeakReferenceList?.isEmpty()!!) {
+                unregisterNetworkChangeReceiver()
+            }
         }
 
     }
@@ -133,31 +131,28 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     /*
         Get report of internet speed value from from listener
      */
-    private fun reportNetworkSpeedType(speedType : Int) {
+    private fun reportNetworkSpeedType(speedType: Int) {
         networkTypeValue = speedType
-        if (networkStateListenerWeakReferenceList == null){
+        if (networkStateListenerWeakReferenceList == null) {
             return
         }
 
-        val listenerIterator : MutableIterator<WeakReference<NetworkStateListener>> = networkStateListenerWeakReferenceList!!.iterator()
-        while (listenerIterator.hasNext()){
+        val listenerIterator: MutableIterator<WeakReference<NetworkStateListener>>? = networkStateListenerWeakReferenceList?.iterator()
+        if (listenerIterator != null) {
+            while (listenerIterator.hasNext()) {
 
-            val listenerReference : WeakReference<NetworkStateListener> = listenerIterator.next()
-            if (listenerReference == null){
-                listenerIterator.remove()
-                continue
+                val listenerReference: WeakReference<NetworkStateListener> = listenerIterator.next()
+
+                val statusListener: NetworkStateListener? = listenerReference.get()
+                if (statusListener == null) {
+                    listenerIterator.remove()
+                }
+
+                statusListener?.onNetworkSpeedChanged(speedType)
             }
-
-            val statusListener : NetworkStateListener = listenerReference.get()!!
-            if (statusListener == null){
-                listenerIterator.remove()
-                continue
-            }
-
-            statusListener.onNetworkSpeedChanged(speedType)
         }
 
-        if (networkStateListenerWeakReferenceList!!.isEmpty()){
+        if (networkStateListenerWeakReferenceList!!.isEmpty()) {
             unregisterNetworkChangeReceiver()
         }
     }
@@ -165,13 +160,13 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     /*
         Attach all connectivity listener to listen network state from broadcast receiver
     */
-    fun addNetworkConnectivityListener(statusListener: NetworkStateListener){
-        if (statusListener == null){
+    fun addNetworkConnectivityListener(statusListener: NetworkStateListener?) {
+        if (statusListener == null) {
             return
         }
 
-        networkStateListenerWeakReferenceList!!.add(WeakReference(statusListener))
-        if (networkStateListenerWeakReferenceList!!.size == 1){
+        networkStateListenerWeakReferenceList?.add(WeakReference(statusListener))
+        if (networkStateListenerWeakReferenceList?.size == 1) {
             registerNetworkChangeReceiver()
             return
         }
@@ -184,59 +179,56 @@ class NetworkConfig(context: Context) : NetworkStateReceiver.InternetCheckListen
     /*
         Remove connectivity listener and unregister broadcast receiver
     */
-    fun removeNetworkConnectivityListener(statusListener: NetworkStateListener){
-        if (statusListener == null){
+    fun removeNetworkConnectivityListener(statusListener: NetworkStateListener?) {
+        if (statusListener == null) {
             return
         }
 
-        if (networkStateListenerWeakReferenceList!!.isEmpty()){
+        if (networkStateListenerWeakReferenceList?.isNullOrEmpty()!!) {
             return
         }
 
-        val iterable : MutableIterator<WeakReference<NetworkStateListener>> = networkStateListenerWeakReferenceList!!.iterator()
-        while (iterable.hasNext()){
+        val iterable: MutableIterator<WeakReference<NetworkStateListener>>? = networkStateListenerWeakReferenceList?.iterator()
+        if (iterable != null) {
+            while (iterable.hasNext()) {
 
-            val stateReference : WeakReference<NetworkStateListener> = iterable.next()
+                val stateReference: WeakReference<NetworkStateListener> = iterable.next()
 
-            if (stateReference == null){
-                iterable.remove()
-                continue
-            }
+                val stateListener: NetworkStateListener? = stateReference.get()
+                if (stateListener == null) {
+                    stateReference.clear()
+                    iterable.remove()
+                    continue
+                }
 
-            val stateListener : NetworkStateListener = stateReference.get()!!
-            if (stateListener == null){
-                stateReference.clear()
-                iterable.remove()
-                continue
-            }
+                if (stateListener == statusListener) {
+                    stateReference.clear()
+                    iterable.remove()
+                    break
+                }
 
-            if (stateListener == statusListener){
-                stateReference.clear()
-                iterable.remove()
-                break
-            }
-
-            if (networkStateListenerWeakReferenceList!!.size == 0){
-                unregisterNetworkChangeReceiver()
+                if (networkStateListenerWeakReferenceList?.size == 0) {
+                    unregisterNetworkChangeReceiver()
+                }
             }
         }
     }
 
-    fun removeAllNetworkConnectivityListener(){
-        if (networkStateListenerWeakReferenceList == null){
+    fun removeAllNetworkConnectivityListener() {
+        if (networkStateListenerWeakReferenceList == null) {
             return
         }
 
-        val listenerIterator : MutableIterator<WeakReference<NetworkStateListener>> = networkStateListenerWeakReferenceList!!.iterator()
+        val listenerIterator: MutableIterator<WeakReference<NetworkStateListener>>? = networkStateListenerWeakReferenceList?.iterator()
 
-        while (listenerIterator.hasNext()){
-            val listenerReference : WeakReference<NetworkStateListener> = listenerIterator.next()
+        if (listenerIterator != null) {
+            while (listenerIterator.hasNext()) {
+                val listenerReference: WeakReference<NetworkStateListener> = listenerIterator.next()
 
-            if (listenerReference != null){
                 listenerReference.clear()
-            }
 
-            listenerIterator.remove()
+                listenerIterator.remove()
+            }
         }
 
         unregisterNetworkChangeReceiver()

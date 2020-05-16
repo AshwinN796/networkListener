@@ -18,10 +18,12 @@ class NetworkStateReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        val internetChangeListener : InternetCheckListener = internetListenerReference!!.get()!!
+        val internetChangeListener : InternetCheckListener? = internetListenerReference?.get()
 
-        internetChangeListener.onComplete(NetworkUtil(context!!).isConnectedToMobileOrWifi())
-        internetChangeListener.onInternetSpeed(NetworkUtil(context).isInternetHasSpeed())
+        if(context!=null) {
+            internetChangeListener?.onComplete(NetworkUtil(context).isConnectedToMobileOrWifi())
+            internetChangeListener?.onInternetSpeed(NetworkUtil(context).isInternetHasSpeed())
+        }
     }
 
     /*
@@ -36,7 +38,7 @@ class NetworkStateReceiver : BroadcastReceiver() {
     */
     fun removeInternetStateChangeListener(){
         if (internetListenerReference != null){
-            internetListenerReference!!.clear()
+            internetListenerReference?.clear()
         }
     }
 
