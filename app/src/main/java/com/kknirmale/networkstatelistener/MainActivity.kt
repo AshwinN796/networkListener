@@ -19,13 +19,13 @@ class MainActivity : AppCompatActivity(), NetworkStateListener {
         networkConfig = NetworkConfig.getInstance()
 
         //add connectivity listener
-        networkConfig!!.addNetworkConnectivityListener(this)
+        networkConfig?.addNetworkConnectivityListener(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         //remove connectivity listener
-        networkConfig!!.removeNetworkConnectivityListener(this)
+        networkConfig?.removeNetworkConnectivityListener(this)
     }
 
     /*
