@@ -19,7 +19,7 @@ allprojects {
 
 #### Module level gradle
 ```Gradle
-implementation 'com.github.AshwinN796:networkListener:1.1.0'
+implementation 'com.github.AshwinN796:networkListener:1.1.1'
 ```
 
 ##### Implementation
